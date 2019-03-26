@@ -1,46 +1,32 @@
-# -*- coding: utf-8 -*-
-
-# @Date    : 2018-10-26
-# @Author  : Peng Shiyu
-
-from flask import (
-    Flask,
-    render_template,
-    request,
-    jsonify,
-)
+from flask import Flask, redirect, url_for
+from flask import render_template,request
+from model import User
 
 app = Flask(__name__)
 
-
-@app.route("/")
+@app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template('index.html')
 
+@app.route('/login/',methods=['GET','POST'])
+def user_login():
+    return render_template('user_login.html')
 
-@app.route("/get")
-def get():
-    headers = dict(request.headers)
-    data = {}
-    data["headers"] = headers
-    data["url"] = request.url
-    data["args"] = request.args
-    data["remote_addr"] = request.remote_addr
+@app.route('/regist/',methods=['GET','POST'])
+def user_regist():
+    if request.method == "POST":
+        print(request.form)
+        user = User()
+        user.name = request.form["user_name"]
+        user.pwd = request.form["user_pwd"]
+        user.mail = request.form["user_mail"]
+        user.age= request.form["user_age"]
+        user.birthday = request.form["user_birthday"]
+        user.face = request.form["user_face"]
+        print(user.name)
 
-    return jsonify(data)
-
-
-@app.route("/post", methods=["POST"])
-def post():
-    headers = dict(request.headers)
-    data = {}
-    data["headers"] = headers
-    data["url"] = request.url
-    data["form"] = request.form
-    data["remote_addr"] = request.remote_addr
-
-    return jsonify(data)
-
+        return redirect(url_for("user_login",username=user.name))
+    return render_template('user_regist.html')
 
 if __name__ == '__main__':
     app.run()
